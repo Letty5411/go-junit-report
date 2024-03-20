@@ -28,7 +28,7 @@ var (
 	regexEndBenchmark = regexp.MustCompile(`^--- (BENCH|FAIL|SKIP): (Benchmark[^ -]+)(?:-\d+)?$`)
 	//regexEndTest      = regexp.MustCompile(`((?:    )*)--- (PASS|FAIL|SKIP): ([^ ]+) \((\d+\.\d+)(?: seconds|s)\)`)
 	regexEndTest1 = regexp.MustCompile(`((?:    )*)--- (PASS|FAIL|SKIP): (.*) \((\d+\.\d+)(?: seconds|s)\)`)
-	regexEndTest2 = regexp.MustCompile(`((?:    )*)\[(PASS|FAIL|SKIP)\]: (.*) \((\d+\.\d+)(?: seconds|s)\)`)
+	regexEndTest2 = regexp.MustCompile(`((?:    )*)\[(PASS|FAIL|SKIP)\] (.*) \((\d+\.\d+)(?: seconds|s)\)`)
 	regexStatus   = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
 	regexSummary  = regexp.MustCompile(`` +
 		// 1: result
