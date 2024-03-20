@@ -26,9 +26,11 @@ var (
 	regexBenchSummary = regexp.MustCompile(`^(Benchmark[^ -]+)(?:-\d+\s+|\s+)(\d+)\s+(\d+|\d+\.\d+)\sns\/op(?:\s+(\d+|\d+\.\d+)\sMB\/s)?(?:\s+(\d+)\sB\/op)?(?:\s+(\d+)\sallocs/op)?`)
 	regexCoverage     = regexp.MustCompile(`^coverage:\s+(\d+|\d+\.\d+)%\s+of\s+statements(?:\sin\s(.+))?$`)
 	regexEndBenchmark = regexp.MustCompile(`^--- (BENCH|FAIL|SKIP): (Benchmark[^ -]+)(?:-\d+)?$`)
-	regexEndTest      = regexp.MustCompile(`((?:    )*)--- (PASS|FAIL|SKIP): ([^ ]+) \((\d+\.\d+)(?: seconds|s)\)`)
-	regexStatus       = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
-	regexSummary      = regexp.MustCompile(`` +
+	//regexEndTest      = regexp.MustCompile(`((?:    )*)--- (PASS|FAIL|SKIP): ([^ ]+) \((\d+\.\d+)(?: seconds|s)\)`)
+	regexEndTest1 = regexp.MustCompile(`((?:    )*)--- (PASS|FAIL|SKIP): (.*) \((\d+\.\d+)(?: seconds|s)\)`)
+	regexEndTest2 = regexp.MustCompile(`((?:    )*)\[(PASS|FAIL|SKIP)\]: (.*) \((\d+\.\d+)(?: seconds|s)\)`)
+	regexStatus   = regexp.MustCompile(`^(PASS|FAIL|SKIP)$`)
+	regexSummary  = regexp.MustCompile(`` +
 		// 1: result
 		`^(\?|ok|FAIL)` +
 		// 2: package name
@@ -194,7 +196,9 @@ func (p *Parser) parseLine(line string) (events []Event) {
 	} else if strings.HasPrefix(line, "=== NAME ") {
 		// for compatibility with gotest 1.20+ https://go-review.git.corp.google.com/c/go/+/443596
 		return p.contTest(strings.TrimSpace(line[9:]))
-	} else if matches := regexEndTest.FindStringSubmatch(line); len(matches) == 5 {
+	} else if matches := regexEndTest1.FindStringSubmatch(line); len(matches) == 5 {
+		return p.endTest(line, matches[1], matches[2], matches[3], matches[4])
+	} else if matches := regexEndTest2.FindStringSubmatch(line); len(matches) == 5 {
 		return p.endTest(line, matches[1], matches[2], matches[3], matches[4])
 	} else if matches := regexStatus.FindStringSubmatch(line); len(matches) == 2 {
 		return p.status(matches[1])
